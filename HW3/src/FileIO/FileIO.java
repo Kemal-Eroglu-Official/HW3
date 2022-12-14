@@ -5,7 +5,6 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Scanner;
-
 import Programme.ArrayListDeque.ArrayListDeque;
 import Programme.DataClasses.FurnitureRecipe;
 import Programme.DataClasses.Material;
@@ -13,44 +12,54 @@ import Programme.DataClasses.MaterialType;
 import Programme.Enums.FurnitureName;
 
 public class FileIO {
-	private ArrayList<FurnitureRecipe> recipe_list;
-	private ArrayList<ArrayList<HashMap<String, Integer>>> manufacturers_material_shopping;
-	private ArrayList<ArrayList<HashMap<String, Integer>>> manufacturers_furniture_produce;
+	private ArrayList<FurnitureRecipe> recipeList;
+	private ArrayList<ArrayList<HashMap<String, Integer>>> manufacturersMaterialShopping;
+	private ArrayList<ArrayList<HashMap<String, Integer>>> manufacturersFurnitureProduce;
 	private ArrayList<Material> materials;
-    private ArrayList<MaterialType> rawMaterials;
-    private HashMap<String, ArrayListDeque<Material>> vendorInventory;
+    	private ArrayList<MaterialType> rawMaterials;
+    	private HashMap<String, ArrayListDeque<Material>> vendorInventory;
 	
 	public FileIO() {
-		recipe_list = new ArrayList<FurnitureRecipe>();
-		manufacturers_material_shopping = new ArrayList<ArrayList<HashMap<String,Integer>>>();
-		manufacturers_furniture_produce = new ArrayList<ArrayList<HashMap<String,Integer>>>();
+		recipeList = new ArrayList<FurnitureRecipe>();
+		manufacturersMaterialShopping = new ArrayList<ArrayList<HashMap<String,Integer>>>();
+		manufacturersFurnitureProduce = new ArrayList<ArrayList<HashMap<String,Integer>>>();
 		materials = new ArrayList<Material>();
 		rawMaterials = new ArrayList<MaterialType>();
 		vendorInventory = new HashMap<String, ArrayListDeque<Material>>();
 	}
 	
+	/** 
+	* Method that reads files and stores them in memory.
+	* It is mandatory to invoke any fileio method before using it.
+	*/
 	public void setup() {
-        setupRawMaterials();
-        setupMaterials();
-        setupVendorInventory();
-        read_furniture_recipe();
-        read_manufactures_material_shopping();
-        read_manufactures_furniture_produce();
-    }
+        	setupRawMaterials();
+        	setupMaterials();
+        	setupVendorInventory();
+        	readFurnitureRecipe();
+        	readManufacturesMaterialShopping();
+        	readManufacturesFurnitureProduce();
+    	}
 	
-	private void read_furniture_recipe() {
+	// The method that creates recipes of furnitures.
+	private void readFurnitureRecipe() {
 		try {
 			Scanner s = new Scanner(new File("src/Data/FurnitureParts.csv"));
 			while(s.hasNextLine()) {
 				String[] parts = s.nextLine().split(",");
-				FurnitureRecipe recipe = new FurnitureRecipe(FurnitureName.findByCode(parts[0]));
+				FurnitureRecipe recipe = new FurnitureRecipe(
+					FurnitureName.findByCode(parts[0])
+				);
+				
 				for(int i = 1; i < parts.length; i += 2) {
 					recipe.addPartRecipe(parts[i], Integer.parseInt(parts[i+1]));
 				}
-				this.recipe_list.add(recipe);
+				
+				this.recipeList.add(recipe);
 			}
 			s.close();
-		} catch (FileNotFoundException e) {
+		} 
+		catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
 		catch(Exception ex) {
@@ -58,70 +67,73 @@ public class FileIO {
 		}
 	}
 	
-	private void read_manufactures_material_shopping() {
+	// The method that reads manufacturers' daily material request.
+	private void readManufacturesMaterialShopping() {
 		try {
 			Scanner s1 = new Scanner(new File("src/Data/Manufacturer1Materials.csv"));
 			Scanner s2 = new Scanner(new File("src/Data/Manufacturer2Materials.csv"));
-			ArrayList<HashMap<String, Integer>> daily_record1 = new ArrayList<HashMap<String,Integer>>();
-			ArrayList<HashMap<String, Integer>> daily_record2 = new ArrayList<HashMap<String,Integer>>();
+			ArrayList<HashMap<String, Integer>> dailyRecord1 = new ArrayList<HashMap<String, Integer>>();
+			ArrayList<HashMap<String, Integer>> dailyRecord2 = new ArrayList<HashMap<String, Integer>>();
 			
 			while(s1.hasNextLine()) {
 				String[] parts = s1.nextLine().split(",");
-				HashMap<String, Integer> shop_command = new HashMap<String, Integer>();
+				HashMap<String, Integer> shopCommand = new HashMap<String, Integer>();
 				for(int i = 1; i < parts.length; i += 2) {
-					shop_command.put(parts[i], Integer.parseInt(parts[i+1]));
+					shopCommand.put(parts[i], Integer.parseInt(parts[i+1]));
 				}
-				daily_record1.add(shop_command);
+				dailyRecord1.add(shopCommand);
 			}
 			
 			while(s2.hasNextLine()) {
 				String[] parts = s2.nextLine().split(",");
-				HashMap<String, Integer> shop_command = new HashMap<String, Integer>();
+				HashMap<String, Integer> shopCommand = new HashMap<String, Integer>();
 				for(int i = 1; i < parts.length; i += 2) {
-					shop_command.put(parts[i], Integer.parseInt(parts[i+1]));
+					shopCommand.put(parts[i], Integer.parseInt(parts[i+1]));
 				}
-				daily_record2.add(shop_command);
+				dailyRecord2.add(shopCommand);
 			}
 			
 			s1.close();
 			s2.close();
-			this.manufacturers_material_shopping.add(daily_record1);
-			this.manufacturers_material_shopping.add(daily_record2);
-		} catch (FileNotFoundException e) {
+			this.manufacturersMaterialShopping.add(dailyRecord1);
+			this.manufacturersMaterialShopping.add(dailyRecord2);
+		}
+		catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
 	}
 	
-	private void read_manufactures_furniture_produce() {
+	private void readManufacturesFurnitureProduce() {
 		try {
 			Scanner s1 = new Scanner(new File("src/Data/Manufacturer1Furnitures.csv"));
 			Scanner s2 = new Scanner(new File("src/Data/Manufacturer2Furnitures.csv"));
-			ArrayList<HashMap<String, Integer>> daily_record1 = new ArrayList<HashMap<String,Integer>>();
-			ArrayList<HashMap<String, Integer>> daily_record2 = new ArrayList<HashMap<String,Integer>>();
+			ArrayList<HashMap<String, Integer>> dailyRecord1 = new ArrayList<HashMap<String,Integer>>();
+			ArrayList<HashMap<String, Integer>> dailyRecord2 = new ArrayList<HashMap<String,Integer>>();
 			
 			while(s1.hasNextLine()) {
 				String[] parts = s1.nextLine().split(",");
-				HashMap<String, Integer> shop_command = new HashMap<String, Integer>();
+				HashMap<String, Integer> shopCommand = new HashMap<String, Integer>();
 				for(int i = 1; i < parts.length; i += 2) {
-					shop_command.put(parts[i], Integer.parseInt(parts[i+1]));
+					shopCommand.put(parts[i], Integer.parseInt(parts[i+1]));
 				}
-				daily_record1.add(shop_command);
+				dailyRecord1.add(shop_command);
 			}
 			
 			while(s2.hasNextLine()) {
 				String[] parts = s2.nextLine().split(",");
-				HashMap<String, Integer> shop_command = new HashMap<String, Integer>();
+				HashMap<String, Integer> shopCommand = new HashMap<String, Integer>();
 				for(int i = 1; i < parts.length; i += 2) {
-					shop_command.put(parts[i], Integer.parseInt(parts[i+1]));
+					shopCommand.put(parts[i], Integer.parseInt(parts[i+1]));
 				}
-				daily_record2.add(shop_command);
+				dailyRecord2.add(shop_command);
 			}
 			
 			s1.close();
 			s2.close();
-			this.manufacturers_furniture_produce.add(daily_record1);
-			this.manufacturers_furniture_produce.add(daily_record2);
-		} catch (FileNotFoundException e) {
+			this.manufacturersFurnitureProduce.add(dailyRecord1);
+			this.manufacturersFurnitureProduce.add(dailyRecord2);
+		} 
+		catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
 	}
@@ -154,72 +166,72 @@ public class FileIO {
         }
     }
 
-    private void setupMaterials() {
-        if (rawMaterials == null) {
-            return;
-        }
+    	private void setupMaterials() {
+        	if (rawMaterials == null) {
+            		return;
+        	}
 
-        try {
-            Scanner scanner = new Scanner(new File("src\\Data\\VendorPossessions.csv"));
+        	try {
+            		Scanner scanner = new Scanner(new File("src\\Data\\VendorPossessions.csv"));
 
-            while (scanner.hasNextLine()) {
-                String line = scanner.nextLine();
-                String[] arr = line.split(",");
+            		while (scanner.hasNextLine()) {
+                		String line = scanner.nextLine();
+                		String[] arr = line.split(",");
 
-                if (arr.length != 2) {
-                    System.exit(-1);
-                }
+                		if (arr.length != 2) {
+			        	System.exit(-1);
+                		}
 
-                String materialCode = arr[0];
-                int quality = Integer.parseInt(arr[1]);
+                		String materialCode = arr[0];
+                		int quality = Integer.parseInt(arr[1]);
 
-                for (MaterialType type : rawMaterials) {
-                    if (type.getMaterial_code().equals(materialCode)) {
-                        materials.add(
-                            new Material(
-                                new MaterialType(type), 
-                                quality
-                            )
-                        );
-                    }
-                }
-            }
-            scanner.close();
-        } 
-        catch (Exception e) {
-            System.out.println(e.getMessage());
-        }
-    }
+                		for (MaterialType type : rawMaterials) {
+                    			if (type.getMaterial_code().equals(materialCode)) {
+                        			materials.add(
+                            				new Material(
+                                				new MaterialType(type), 
+                                				quality
+                            				)
+                        			);
+                    			}
+                		}
+            		}
+            		scanner.close();
+        	} 
+        	catch (Exception e) {
+            		System.out.println(e.getMessage());
+        	}
+   	}
 
-    private void setupVendorInventory() {
-        if (materials == null) {
-            return;
-        }
+    	private void setupVendorInventory() {
+        	if (materials == null) {
+            		return;
+       	 	}
 
-        for (Material material : this.materials) {
-            if (vendorInventory.keySet().contains(material.getMaterial_code())) {
-                vendorInventory.get(material.getMaterial_code()).addBack(new Material(material));
-            }
-            else {
-                ArrayListDeque<Material> deque = new ArrayListDeque<>();
-                deque.addFront(new Material(material));
-                vendorInventory.put(material.getMaterial_code(), deque);
-            }
-        }
-    }
+        	for (Material material : this.materials) {
+            		if (vendorInventory.keySet().contains(material.getMaterial_code())) {
+                		vendorInventory.get(material.getMaterial_code()).addBack(new Material(material));
+            		}
+            		else {
+                		ArrayListDeque<Material> deque = new ArrayListDeque<>();
+                		deque.addFront(new Material(material));
+                		vendorInventory.put(material.getMaterial_code(), deque);
+            		}
+        	}
+    	}
 
-    public ArrayList<Material> getMaterials() {
-        return materials;
-    }
+    	public ArrayList<Material> getMaterials() {
+        	return materials;
+    	}
 
-    public ArrayList<MaterialType> getRawMaterials() {
-        return rawMaterials;
-    }
+    	public ArrayList<MaterialType> getRawMaterials() {
+        	return rawMaterials;
+    	}
 
-    public HashMap<String, ArrayListDeque<Material>> getVendorInventory() {
-        return vendorInventory;
-    }
-	
+    	public HashMap<String, ArrayListDeque<Material>> getVendorInventory() {
+        	return vendorInventory;
+    	}
+		
 	public ArrayList<FurnitureRecipe> getRecipe(){
 		return new ArrayList<FurnitureRecipe>(this.recipe_list);
 	}
