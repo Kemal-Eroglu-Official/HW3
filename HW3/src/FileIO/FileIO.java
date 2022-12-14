@@ -138,6 +138,7 @@ public class FileIO {
 		}
 	}
 
+    // The method that reads and stores the data of raw matarial.
     private void setupRawMaterials() {
         try {
             Scanner scanner = new Scanner(new File("src/Data/RawMaterialProperties.csv"));
@@ -166,6 +167,7 @@ public class FileIO {
         }
     }
 
+	// The method that creates material objects to be used as vendor inventory.
     	private void setupMaterials() {
         	if (rawMaterials == null) {
             		return;
@@ -186,7 +188,9 @@ public class FileIO {
                 		int quality = Integer.parseInt(arr[1]);
 
                 		for (MaterialType type : rawMaterials) {
-                    			if (type.getMaterial_code().equals(materialCode)) {
+					// if the 'type' matches with the string with read from file
+					// add a new material object with the quality read from file.
+					if (type.getMaterial_code().equals(materialCode)) {
                         			materials.add(
                             				new Material(
                                 				new MaterialType(type), 
@@ -210,9 +214,14 @@ public class FileIO {
 
         	for (Material material : this.materials) {
             		if (vendorInventory.keySet().contains(material.getMaterial_code())) {
+				// if the material code already added to the 'vendorInventory',
+				// add the material to the ArrayListDeque.
                 		vendorInventory.get(material.getMaterial_code()).addBack(new Material(material));
             		}
             		else {
+				// Create a new ArrayListDeque,
+				// and add the 'material' to the new ArrayListDeque,
+				// then put that ArrayListDeque into the vendorInventory.
                 		ArrayListDeque<Material> deque = new ArrayListDeque<>();
                 		deque.addFront(new Material(material));
                 		vendorInventory.put(material.getMaterial_code(), deque);
