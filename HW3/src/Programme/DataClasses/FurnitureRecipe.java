@@ -3,7 +3,7 @@ package Programme.DataClasses;
 import java.util.HashMap;
 import Programme.Enums.FurnitureName;
 
-//STATIC YAPILCAK
+
 public class FurnitureRecipe {
 	private FurnitureName furniture_name;
 	private HashMap<String, Integer> parts;
@@ -29,6 +29,7 @@ public class FurnitureRecipe {
 		this(furniture_code, new HashMap<String, Integer>());
 	}
 	
+	// Getters methods
 	public FurnitureName getFurnitureName() {
 		return this.furniture_name;
 	}
@@ -36,12 +37,12 @@ public class FurnitureRecipe {
 	public HashMap<String, Integer> getParts(){
 		return new HashMap<String, Integer>(this.parts);
 	}
-	
+	// Adding to HashMap
 	public void addPartRecipe(String part_code, Integer count) {
 		this.parts.put(part_code, count);
 	}
 	
-	@Override
+	@Override 
 	public boolean equals(Object obj) {
 		if(obj == null || this.getClass() != obj.getClass())
 			return false;
