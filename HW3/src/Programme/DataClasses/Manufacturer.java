@@ -76,19 +76,16 @@ public class Manufacturer implements ProduceCapable{
 		return new HashMap<FurnitureName, Integer>(this.not_made_list);
 	}
 	
-	public void addMaterialsToInventory(HashMap<String, ArrayList<Material>> order_list) {
-		for(String key: (String[]) order_list.keySet().toArray()) {
-			for(Material m: order_list.get(key)) {
-				this.material_inventory.get(key).add(m);
-			}
-		}
+	public void addMaterialsToInventory(Material material) {
+		this.material_inventory.get(material.getMaterial_code()).add(material);
 		this.calculateTotalCost();
 	}
 	
 	@Override
-	public void makeFurnituresByOrder(HashMap<FurnitureName, Integer> order, HashMap<FurnitureName, FurnitureRecipe> recipe_book) {
+	public void makeFurnituresByOrder(HashMap<String , Integer> order, HashMap<FurnitureName, FurnitureRecipe> recipe_book) {
 		ArrayList<Material> parts = new ArrayList<Material>();
-		for(FurnitureName order_name: order.keySet()) {
+		for(String order_key: (order.keySet())) {
+			FurnitureName order_name = FurnitureName.findByCode(order_key);
 			FurnitureRecipe recipe = recipe_book.get(order_name);
 			for(int count = 0; count < order.get(order_name); count++) {
 				boolean producable = true;
