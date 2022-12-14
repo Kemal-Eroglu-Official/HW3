@@ -24,9 +24,11 @@ public class Furniture {
 	public Furniture(String furniture_code, ArrayList<Material> parts) {
 		this(FurnitureName.findByCode(furniture_code), parts);
 	}
+	//Default Constructor
 	public Furniture() {
 		this(FurnitureName.OBSIDIAN, new ArrayList<Material>());
 	}
+	
 	public Furniture(Furniture other) {
 		this(other.getFurniture_name(), new ArrayList<Material>(other.getParts()));
 	}
@@ -52,6 +54,8 @@ public class Furniture {
 	private double calculatePrice() {
 		return this.cost * FurnitureType.getPercentageValue(this.furniture_type);
 	}
+	
+	//Getters
 	public FurnitureName getFurniture_name() {
 		return furniture_name;
 	}
