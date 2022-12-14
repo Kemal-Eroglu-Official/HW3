@@ -5,7 +5,7 @@ import java.util.HashMap;
 
 import Programme.Enums.FurnitureName;
 
-public class Manufacturer {
+public class Manufacturer implements ProduceCapable{
 	private ArrayList<Furniture> furniture_inventory;
 	private HashMap<String, ArrayList<Material>> material_inventory;
 	private double totalCost;
@@ -85,6 +85,7 @@ public class Manufacturer {
 		this.calculateTotalCost();
 	}
 	
+	@Override
 	public void makeFurnituresByOrder(HashMap<FurnitureName, Integer> order, HashMap<FurnitureName, FurnitureRecipe> recipe_book) {
 		ArrayList<Material> parts = new ArrayList<Material>();
 		for(FurnitureName order_name: order.keySet()) {
