@@ -16,6 +16,9 @@ public class FurnitureRecipe {
 		this.furniture_name = furniture_name;
 		this.parts = new HashMap<>(parts);
 	}
+	public FurnitureRecipe(FurnitureName name) {
+		this(name, new HashMap<String, Integer>());
+	}
 	public FurnitureRecipe() {
 		this("", new HashMap<String, Integer>());
 	}
