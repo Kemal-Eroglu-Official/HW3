@@ -37,7 +37,7 @@ public class FurnitureRecipe {
 	public HashMap<String, Integer> getParts(){
 		return new HashMap<String, Integer>(this.parts);
 	}
-	// Adding to HashMap
+	// Adding to HashMap 'parts'
 	public void addPartRecipe(String part_code, Integer count) {
 		this.parts.put(part_code, count);
 	}
