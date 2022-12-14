@@ -3,22 +3,42 @@ package FileIO;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Scanner;
 
+import Programme.ArrayListDeque.ArrayListDeque;
 import Programme.DataClasses.FurnitureRecipe;
+import Programme.DataClasses.Material;
+import Programme.DataClasses.MaterialType;
 import Programme.Enums.FurnitureName;
 
 public class FileIO {
 	private ArrayList<FurnitureRecipe> recipe_list;
+	private ArrayList<ArrayList<HashMap<String, Integer>>> manufacturers_material_shopping;
+	private ArrayList<ArrayList<HashMap<String, Integer>>> manufacturers_furniture_produce;
 	private ArrayList<Material> materials;
-    	private ArrayList<MaterialType> rawMaterials;
-    	private HashMap<String, ArrayListDeque<Material>> vendorInventory;
+    private ArrayList<MaterialType> rawMaterials;
+    private HashMap<String, ArrayListDeque<Material>> vendorInventory;
 	
 	public FileIO() {
 		recipe_list = new ArrayList<FurnitureRecipe>();
+		manufacturers_material_shopping = new ArrayList<ArrayList<HashMap<String,Integer>>>();
+		manufacturers_furniture_produce = new ArrayList<ArrayList<HashMap<String,Integer>>>();
+		materials = new ArrayList<Material>();
+		rawMaterials = new ArrayList<MaterialType>();
+		vendorInventory = new HashMap<String, ArrayListDeque<Material>>();
 	}
 	
-	public void read_furniture_recipe() {
+	public void setup() {
+        setupRawMaterials();
+        setupMaterials();
+        setupVendorInventory();
+        read_furniture_recipe();
+        read_manufactures_material_shopping();
+        read_manufactures_furniture_produce();
+    }
+	
+	private void read_furniture_recipe() {
 		try {
 			Scanner s = new Scanner(new File("src/Data/FurnitureParts.csv"));
 			while(s.hasNextLine()) {
@@ -29,6 +49,7 @@ public class FileIO {
 				}
 				this.recipe_list.add(recipe);
 			}
+			s.close();
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
@@ -37,19 +58,77 @@ public class FileIO {
 		}
 	}
 	
-	public ArrayList<FurnitureRecipe> getRecipe(){
-		return new ArrayList<FurnitureRecipe>(this.recipe_list);
+	private void read_manufactures_material_shopping() {
+		try {
+			Scanner s1 = new Scanner(new File("src/Data/Manufacturer1Materials.csv"));
+			Scanner s2 = new Scanner(new File("src/Data/Manufacturer2Materials.csv"));
+			ArrayList<HashMap<String, Integer>> daily_record1 = new ArrayList<HashMap<String,Integer>>();
+			ArrayList<HashMap<String, Integer>> daily_record2 = new ArrayList<HashMap<String,Integer>>();
+			
+			while(s1.hasNextLine()) {
+				String[] parts = s1.nextLine().split(",");
+				HashMap<String, Integer> shop_command = new HashMap<String, Integer>();
+				for(int i = 1; i < parts.length; i += 2) {
+					shop_command.put(parts[i], Integer.parseInt(parts[i+1]));
+				}
+				daily_record1.add(shop_command);
+			}
+			
+			while(s2.hasNextLine()) {
+				String[] parts = s2.nextLine().split(",");
+				HashMap<String, Integer> shop_command = new HashMap<String, Integer>();
+				for(int i = 1; i < parts.length; i += 2) {
+					shop_command.put(parts[i], Integer.parseInt(parts[i+1]));
+				}
+				daily_record2.add(shop_command);
+			}
+			
+			s1.close();
+			s2.close();
+			this.manufacturers_material_shopping.add(daily_record1);
+			this.manufacturers_material_shopping.add(daily_record2);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
 	}
-
-    public void setup() {
-        setupRawMaterials();
-        setupMaterials();
-        setupVendorInventory();
-    }
+	
+	private void read_manufactures_furniture_produce() {
+		try {
+			Scanner s1 = new Scanner(new File("src/Data/Manufacturer1Furnitures.csv"));
+			Scanner s2 = new Scanner(new File("src/Data/Manufacturer2Furnitures.csv"));
+			ArrayList<HashMap<String, Integer>> daily_record1 = new ArrayList<HashMap<String,Integer>>();
+			ArrayList<HashMap<String, Integer>> daily_record2 = new ArrayList<HashMap<String,Integer>>();
+			
+			while(s1.hasNextLine()) {
+				String[] parts = s1.nextLine().split(",");
+				HashMap<String, Integer> shop_command = new HashMap<String, Integer>();
+				for(int i = 1; i < parts.length; i += 2) {
+					shop_command.put(parts[i], Integer.parseInt(parts[i+1]));
+				}
+				daily_record1.add(shop_command);
+			}
+			
+			while(s2.hasNextLine()) {
+				String[] parts = s2.nextLine().split(",");
+				HashMap<String, Integer> shop_command = new HashMap<String, Integer>();
+				for(int i = 1; i < parts.length; i += 2) {
+					shop_command.put(parts[i], Integer.parseInt(parts[i+1]));
+				}
+				daily_record2.add(shop_command);
+			}
+			
+			s1.close();
+			s2.close();
+			this.manufacturers_furniture_produce.add(daily_record1);
+			this.manufacturers_furniture_produce.add(daily_record2);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+	}
 
     private void setupRawMaterials() {
         try {
-            Scanner scanner = new Scanner("src\\Data\\RawMaterialProperties.csv");
+            Scanner scanner = new Scanner(new File("src/Data/RawMaterialProperties.csv"));
 
             while (scanner.hasNextLine()) {
                 String line = scanner.nextLine();
@@ -81,7 +160,7 @@ public class FileIO {
         }
 
         try {
-            Scanner scanner = new Scanner("src\\Data\\VendorPossesions.csv");
+            Scanner scanner = new Scanner(new File("src\\Data\\VendorPossessions.csv"));
 
             while (scanner.hasNextLine()) {
                 String line = scanner.nextLine();
@@ -95,7 +174,7 @@ public class FileIO {
                 int quality = Integer.parseInt(arr[1]);
 
                 for (MaterialType type : rawMaterials) {
-                    if (type.getMaterial_code() == materialCode) {
+                    if (type.getMaterial_code().equals(materialCode)) {
                         materials.add(
                             new Material(
                                 new MaterialType(type), 
@@ -140,4 +219,17 @@ public class FileIO {
     public HashMap<String, ArrayListDeque<Material>> getVendorInventory() {
         return vendorInventory;
     }
+	
+	public ArrayList<FurnitureRecipe> getRecipe(){
+		return new ArrayList<FurnitureRecipe>(this.recipe_list);
+	}
+
+	public ArrayList<ArrayList<HashMap<String, Integer>>> getManufacturerMaterialShopRecords(){
+		return new ArrayList<ArrayList<HashMap<String, Integer>>>(this.manufacturers_material_shopping);
+	}
+	
+	public ArrayList<ArrayList<HashMap<String, Integer>>> getManufacturerFurnitureProduceRecords(){
+		return new ArrayList<ArrayList<HashMap<String, Integer>>>(this.manufacturers_furniture_produce);
+	}
+
 }
